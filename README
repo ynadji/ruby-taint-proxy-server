@@ -1,0 +1,8 @@
+This does two things:
+	1.) Fetches a series of webpages from a file and given the argument
+	places delimiters around the "harmful" text.
+
+	2.) The same as above, however, it operates in the context of an
+	HTTP proxy server.
+
+Yacin
