@@ -52,17 +52,25 @@ $outfile.puts("Date,Hackername,Website,Pagerank,Attack Type,Mirror Link,\"Type\"
 				arr << "http://www.xssed.com#{$~}"
 			end
 
-			if opts[:all]
-				$all_rows << arr
-				$urls << arr[2]
-			elsif $urls.index(arr[2]) == nil && arr[2] =~ /\.(com|org|net|gov)$/
-				$all_rows << arr
-				$urls << arr[2]
+			if arr[4] == "XSS"
+				if opts[:all]
+					$all_rows << arr
+					$urls << arr[2]
+				elsif $urls.index(arr[2]) == nil && arr[2] =~ /\.(com|org|net|gov)$/
+					$all_rows << arr
+					$urls << arr[2]
+				end
 			end
 		end
 	end
 	# don't hammer the server
 	sleep 1
+end
+
+# turns crap&attack-str&Send -> attack-str
+def amp_strip(str)
+	arr = str.split('&')
+	return arr.sort {|x,y| y.length <=> x.length }[0]
 end
 
 $all_rows.sort! {|x,y| x[3] <=> y[3] }
@@ -77,8 +85,28 @@ else
 		# we have an attack url, woo!
 		if html =~ /<th class="row3" scope="col" colspan="4">URL: (.*?)<\/th>/
 			attack_str = $1.gsub("<br>","").gsub("&lt;","<").gsub("&gt;",">").gsub("&quot;",'"').gsub("&apos;","'").gsub("&amp;","&")
-			$outfile.puts(row[5])
-			$outfile.puts(attack_str)
+			# we have the legit attack_url
+			if html =~ /<th scope="col"><iframe src="(.*?)"/
+				attack_url = $1
+			end
+			# the main portion of the attack resides as a GET argument
+			# so it'll be something=attack-str
+			# chances are, it's also the longest. so we split by '=', drop the
+			# first arg (since we don't care about the URL), and use the longest
+			# portion as the attack string
+			attack_arr = attack_str.split('=')
+			attack_arr.shift
+
+			# lets remove them if they don't have script/alert/javascript
+			attack_arr.delete_if do |item|
+				item !~ /(script)|(alert)/
+			end
+
+			attack_str = attack_arr.sort {|x,y| y.length <=> x.length}[0]
+			if not attack_str.nil? and not attack_url.nil?
+				$outfile.puts(attack_url)
+				$outfile.puts(attack_str)
+			end
 		end
 	end
 end
