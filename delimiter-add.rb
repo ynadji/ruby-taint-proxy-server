@@ -35,6 +35,20 @@ def add_delims(html, attack, log)
 		attacks << CGI::unescape(attack).chomp
 	end
 
+	# should be the most "readable"
+	unescaped_attack = attacks.last
+
+	# guess server-side escaping or JS-escaping
+	if unescaped_attack =~ /"/
+		attacks << unescaped_attack.gsub('"','\"')
+	end
+	if unescaped_attack =~ /'/
+		attacks << unescaped_attack.gsub("'","\\'")
+	end
+	if unescaped_attack =~ /"/ and unescaped_attack =~ /'/
+		attacks << unescaped_attack.gsub('"','\"').gsub("'","\\'")
+	end
+
 	attacks.uniq!
 
 	attacks.each do |att|
@@ -49,6 +63,25 @@ def add_delims(html, attack, log)
 			nullified = true
 
 			log.puts("#{att} nullified!")
+		end
+	end
+
+	# if it didn't work, try
+	# last ditch effort, only attack the specific script tag
+	if not nullified
+		unescaped_attack.scan(/<script>.*?<\/script>/i).each do |att|
+			# we sucessfully delimited an attack
+			# for now, just use **randnum**
+			if html.include?(att)
+				key = rand(999).to_s
+				key = "0#{key}" if key.length == 2
+				key = "00#{key}" if key.length == 1
+				html.gsub!("#{att}","**#{key}**#{att}**#{key}**")
+
+				nullified = true
+
+				log.puts("#{att} nullified!")
+			end
 		end
 	end
 

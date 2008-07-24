@@ -68,9 +68,34 @@ $outfile.puts("Date,Hackername,Website,Pagerank,Attack Type,Mirror Link,\"Type\"
 end
 
 # turns crap&attack-str&Send -> attack-str
-def amp_strip(str)
-	arr = str.split('&')
-	return arr.sort {|x,y| y.length <=> x.length }[0]
+# the main portion of the attack resides as a GET argument
+# so it'll be something=attack-str
+# chances are, it's also the longest. so we split by '=', drop the
+# first arg (since we don't care about the URL), and use the longest
+# portion as the attack string
+#
+# better comments here plz
+def strip_garbage(str)
+	# split on equal, drop first arg (URL)
+	eq_split = str.split('=')
+	eq_split.shift
+
+	# lets remove them if they don't have script/alert/javascript
+	eq_split.delete_if do |item|
+		item !~ /(script)|(alert)/
+	end
+
+	# of the eq_splits, takes the longest one (most likely the attack string)
+	attack_str = eq_split.sort {|x,y| y.length <=> x.length}[0]
+
+	# if it's nil, we're already screwed, so bail
+	return nil if attack_str.nil?
+
+	# same as above, but for ampersands
+	amp_split = attack_str.split('&')
+	attack_str = amp_split.sort {|x,y| y.length <=> x.length }[0]
+
+	return attack_str
 end
 
 $all_rows.sort! {|x,y| x[3] <=> y[3] }
@@ -89,20 +114,9 @@ else
 			if html =~ /<th scope="col"><iframe src="(.*?)"/
 				attack_url = $1
 			end
-			# the main portion of the attack resides as a GET argument
-			# so it'll be something=attack-str
-			# chances are, it's also the longest. so we split by '=', drop the
-			# first arg (since we don't care about the URL), and use the longest
-			# portion as the attack string
-			attack_arr = attack_str.split('=')
-			attack_arr.shift
 
-			# lets remove them if they don't have script/alert/javascript
-			attack_arr.delete_if do |item|
-				item !~ /(script)|(alert)/
-			end
+			attack_str = strip_garbage(attack_str)
 
-			attack_str = attack_arr.sort {|x,y| y.length <=> x.length}[0]
 			if not attack_str.nil? and not attack_url.nil?
 				$outfile.puts(attack_url)
 				$outfile.puts(attack_str)
