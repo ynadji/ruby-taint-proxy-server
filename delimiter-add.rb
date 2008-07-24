@@ -9,6 +9,8 @@ require 'FileUtils'
 require 'open-uri'
 require 'cgi'
 
+sleep_time = 10
+
 cli_options = Trollop::options do
 	opt :proxy, "Run as a proxy server"
 	opt :port,	"Proxy port", :default => 8080
@@ -113,8 +115,16 @@ def delimit_html(url_file, html_dir, logfile)
 			log.puts("URL:  #{url}")
 			log.puts("ATT:  #{attack}\n")
 			# do stuff
-			page = open(url)
-			html = page.read
+			begin
+				page = open(url)
+				html = page.read
+			rescue Exception => e
+				$stderr.puts("Overloading the server: #{e}")
+				$stderr.puts("Sleeping for: #{sleep_time} seconds")
+				sleep sleep_time
+				sleep_time += 1
+				redo
+			end
 
 			new_html, nullified, attacks = add_delims(html, attack, log)
 

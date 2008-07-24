@@ -12,7 +12,7 @@ opts = Trollop::options do
 	opt :all, "Get from ALL websites or not (otherwise limited to (com|org|net|gov))"
 end
 
-MAX_PAGE = 1
+MAX_PAGE = 287
 URL = "http://www.xssed.com/archive/special=1/page="
 sleep_time = 10
 
