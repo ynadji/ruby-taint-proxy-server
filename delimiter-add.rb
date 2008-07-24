@@ -9,7 +9,7 @@ require 'FileUtils'
 require 'open-uri'
 require 'cgi'
 
-sleep_time = 10
+$sleep_time = 10
 
 cli_options = Trollop::options do
 	opt :proxy, "Run as a proxy server"
@@ -99,7 +99,7 @@ def delimit_html(url_file, html_dir, logfile)
 
 	url = nil
 	attack = nil
-	file_no = "000"
+	file_no = "0000"
 
 	log = File.open(logfile, 'w')
 	log.puts("=====#{Time.now}=====")
@@ -118,11 +118,17 @@ def delimit_html(url_file, html_dir, logfile)
 			begin
 				page = open(url)
 				html = page.read
+			rescue URI::InvalidURIError => e
+				$stderr.puts("URL couldn't be opened: #{url}")
+				log.puts("URL couldn't be opened: #{url}")
+				url = line
+				attack = nil
+				next
 			rescue Exception => e
 				$stderr.puts("Overloading the server: #{e}")
-				$stderr.puts("Sleeping for: #{sleep_time} seconds")
-				sleep sleep_time
-				sleep_time += 1
+				$stderr.puts("Sleeping for: #{$sleep_time} seconds")
+				sleep $sleep_time
+				$sleep_time += 1
 				redo
 			end
 
