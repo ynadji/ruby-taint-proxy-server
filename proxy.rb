@@ -5,22 +5,17 @@ require 'webrick/httpproxy'
 class TaintProxy
 
 	def initialize(port)
-		@s = WEBrick::HTTPProxyServer.new(
-			:Port => port,
-			:RequestCallback => Proc.new{|req,res|
-			puts "-"*70
-			puts req.request_line, req.raw_header
-			res.each do |x|
-				puts "Stuff: #{x}"
-			end
-			puts "-"*70
+		@proxy = WEBrick::HTTPProxyServer.new(
+		     :Port => 8080,
+		     :ProxyContentHandler => lambda { |request,response|
+			response.body.gsub!(%r{<a href=".*?">(.*?)</a>},
+							  '<a href="http://goatse">\1</a>')
 		}
 		)
-		trap("INT"){ @s.shutdown }
 	end
 
 	def start
-		@s.start
+		@proxy.start
 	end
 end
 

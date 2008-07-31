@@ -13,6 +13,7 @@ opts = Trollop::options do
 end
 
 MAX_PAGE = 287
+#MAX_PAGE = 1
 URL = "http://www.xssed.com/archive/special=1/page="
 sleep_time = 10
 

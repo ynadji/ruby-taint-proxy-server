@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3. org/TR/html4/loose.dtd">
+<HTML>
+<HEAD>
+<link rel="stylesheet" type="text/css" href="includes/layout.css" />
+<TITLE>Users - Mutual Bank
+</TITLE>
+</HEAD>
+<h1><a href='index.php'>Mutual Bank -- Users Page</a></h1>
+<div id="navbar">
+
+<ul><li><a href=index.php>Home</a></li><hr><li><b>Users</b></li><hr><li><a href=stock.php>Buy Stock</a></li><hr><li><a href=transfer.php>Send Money</a></li><hr><li><a href=customizer.php>New Feature</a></li><hr></ul>
+<div id="header">
+<div>UC Berkeley CS 101</div>
+<div><a href="?action=logout">Log out yacin</a></div>
+</div>
+</div>
+<div id="main" class="centerpiece">
+<table>
+<tr><td class=main>
+
+ <form name="profileform" method="GET"
+  action="/~ynadji/stanford-crypto/site/users.php">
+ <nobr>User:
+ <input type="text" name="user" value="28jgszb"<script>alert(123)</script>28jgszb" size=30>
+ <input type="submit" value="View"></nobr>
+</form>
+<div id="profileheader"><!-- user data appears here --></div>
+<p class="warning" id="baduser">Cannot find that user.</p><span id='dollars' class='0'/><script type="text/javascript">
+  var total = eval(document.getElementById('dollars').className);
+  function showDollars(dollars) {
+    document.getElementById("profileheader").innerHTML =
+      "\28jgszb"<script>alert(123)</script>28jgszb's balance: $" + dollars;
+    if (dollars < total) {
+      setTimeout("showDollars(" + (dollars + 1) + ")", 100);
+    }
+  }
+  if (total > 0) showDollars(0);  // count up to total
+</script>
+
+</td></tr>
+</table>
+</div>
+
+
+</BODY>
+</HTML>
+

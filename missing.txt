@@ -1,0 +1,44 @@
+0002
+0008
+0011
+0013 -> fromCharCode()
+0016
+0017
+0027
+0031
+0032
+0033
+0038
+0039
+0040
+0041
+0044
+0048
+0049 -> incorrectly placed delimiters
+0050 -> parse problem
+0051 -> parse problem
+0052 -> parse problem
+0054 -> parse problem
+0058 -> parse problem
+0059 -> parse problem
+0060 -> parse problem
+0069 -> parse problem
+0071 -> parse problem
+0072 -> parse problem
+0073 -> parse problem
+0074 -> parse problem
+0078 -> parse problem
+0079 -> parse problem
+0080 -> parse problem
+0081 -> parse problem and delimiters could be better (similar problem on all Xylitol attacks)
+0083 -> parse problem (look at this one first)
+0084 -> parse problem
+0085 -> parse problem
+0088 -> parse problem
+0091 -> incorrectly placed delimiters
+0092 -> parse problem
+0095 -> incorrect delimiters
+0096 -> parse problem
+0097 -> parse problem
+0098 -> parse problem
+0100 -> parse problem

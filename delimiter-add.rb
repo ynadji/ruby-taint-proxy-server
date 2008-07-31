@@ -2,10 +2,10 @@
 #
 # This does all the magic, woo!
 
+require 'fileutils'
 require 'rubygems'
 require 'proxy'
 require 'trollop'
-require 'FileUtils'
 require 'open-uri'
 require 'cgi'
 
@@ -17,6 +17,35 @@ cli_options = Trollop::options do
 	opt :url_file, "File of URLs/attack strings", :default => "xss-attacks.txt"
 	opt :html_dir, "Output directory for delimited HTML files", :default => "html"
 	opt :logfile, "File to log what happened", :default => "delim.log"
+	opt :run, "Run"
+end
+
+# creates our fancy random key, yay!
+def gen_key
+	arr = ('a'..'z').to_a + ('0'..'9').to_a
+	arr.shuffle!
+	arr[0..6].join
+end
+
+def run_attacks(attacks, html, log)
+	nullified = false
+	attacks.each do |att|
+		# we sucessfully delimited an attack
+		# for now, just use **randnum**
+		ret = ""
+		if html.include?(att) and not html.include?("#{3.chr}#{att}#{2.chr}")
+			# different key for each substitution
+			while not ret.nil?
+				key = gen_key
+				ret = html.sub!("#{att}","#{2.chr}#{key}#{3.chr}#{att}#{2.chr}#{key}#{3.chr}")
+
+				nullified = true
+
+				log.puts("#{att} nullified!")
+			end
+		end
+	end
+	nullified
 end
 
 def add_delims(html, attack, log)
@@ -40,51 +69,34 @@ def add_delims(html, attack, log)
 	# should be the most "readable"
 	unescaped_attack = attacks.last
 
-	# guess server-side escaping or JS-escaping
-	if unescaped_attack =~ /"/
-		attacks << unescaped_attack.gsub('"','\"')
-	end
-	if unescaped_attack =~ /'/
-		attacks << unescaped_attack.gsub("'","\\'")
-	end
-	if unescaped_attack =~ /"/ and unescaped_attack =~ /'/
-		attacks << unescaped_attack.gsub('"','\"').gsub("'","\\'")
-	end
-
 	attacks.uniq!
 
-	attacks.each do |att|
-		# we sucessfully delimited an attack
-		# for now, just use **randnum**
-		if html.include?(att)
-			key = rand(999).to_s
-			key = "0#{key}" if key.length == 2
-			key = "00#{key}" if key.length == 1
-			html.gsub!("#{att}","**#{key}**#{att}**#{key}**")
+	nullified = run_attacks(attacks, html, log)
 
-			nullified = true
+	if not nullified
+		newattacks = []
 
-			log.puts("#{att} nullified!")
+		# guess server-side escaping or JS-escaping
+		if unescaped_attack =~ /"/
+			newattacks << unescaped_attack.gsub('"','\"')
 		end
+		if unescaped_attack =~ /'/
+			newattacks << unescaped_attack.gsub("'","\\'")
+		end
+		if unescaped_attack =~ /"/ and unescaped_attack =~ /'/
+			newattacks << unescaped_attack.gsub('"','\"').gsub("'","\\'")
+		end
+
+		nullified = run_attacks(newattacks, html, log)
 	end
+
 
 	# if it didn't work, try
 	# last ditch effort, only attack the specific script tag
 	if not nullified
-		unescaped_attack.scan(/<script>.*?<\/script>/i).each do |att|
-			# we sucessfully delimited an attack
-			# for now, just use **randnum**
-			if html.include?(att)
-				key = rand(999).to_s
-				key = "0#{key}" if key.length == 2
-				key = "00#{key}" if key.length == 1
-				html.gsub!("#{att}","**#{key}**#{att}**#{key}**")
-
-				nullified = true
-
-				log.puts("#{att} nullified!")
-			end
-		end
+		last_ditch_attacks = []
+		unescaped_attack.scan(/<script>.*?<\/script>/i).each {|x| last_ditch_attacks << x}
+		nullified = run_attacks(last_ditch_attacks, html, log)
 	end
 
 	return [html, nullified, attacks]
@@ -137,13 +149,14 @@ def delimit_html(url_file, html_dir, logfile)
 			if not nullified
 				log.puts("Nothing found :(")
 				log.puts("Attacks Tried: #{attacks.inspect}\n\n")
+			else
+				outfile = File.new("#{html_dir}/#{file_no}.html", 'w')
+				outfile.puts(new_html)
+				outfile.close
+
+				file_no.succ!
 			end
 
-			outfile = File.new("#{html_dir}/#{file_no}.html", 'w')
-			outfile.puts(new_html)
-			outfile.close
-
-			file_no.succ!
 			url = line
 			attack = nil
 		end
@@ -156,10 +169,12 @@ def start_proxy(port)
 	# code to start proxy
 end
 
-if cli_options[:proxy]
-	start_proxy(cli_options[:port])
-else
-	delimit_html(cli_options[:url_file], 
-					 cli_options[:html_dir],
-					 cli_options[:logfile])
+if cli_options[:run]
+	if cli_options[:proxy]
+		start_proxy(cli_options[:port])
+	else
+		delimit_html(cli_options[:url_file], 
+			     cli_options[:html_dir],
+			     cli_options[:logfile])
+	end
 end

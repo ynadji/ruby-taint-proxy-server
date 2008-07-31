@@ -1,0 +1,77 @@
+.centerpiece {
+	float: left;
+	margin: 0 auto;
+	width: 500px; 
+	height: 255px; 
+	border: 2px solid #333333;
+	font-size: 10pt;
+}
+
+body {
+	background: #e9e9e9;
+}
+
+form { text-align: left; }
+
+h2 { text-align: left; color: #555555; }
+h1, h1 a { text-decoration: none; text-align: left; color: #555555; }
+h1 { margin: 0em 0px 0em 0px; }
+h2 { margin: 0em 1em 1em 1em; font-size: 1em; }
+.centerpiece textarea { width: 90%; height: 100px; }
+.centerpiece td { height: 0px; } 
+.centerpiece td.main { height: 130px; } 
+#login { background-image: url(lion_sleeping.jpg); font-weight: bold; }
+#login table { margin: 18px 30px 0px 30px; }
+#main { }
+#main td { text-align: left; }
+#main table {
+	width: 180px;
+	height: 155px;
+	margin: 15px 280px 25px 30px;
+}
+.profilecontainer { 
+	height: 100px; 
+	margin: 5px; 
+	border-top: 1px solid #333333; 
+}
+.warning { color: #A00000; font-weight: bold; }
+.footer { text-align: left; }
+#header {
+	padding-left: 2px;
+	position: fixed;
+	top: 265px;
+	left: 10px;
+	text-align: left; 
+	font-size: smaller;
+}
+
+#navbar {
+	float: left;
+	background-color: #c8c8c8;
+	width: 150px;
+	height: 255px;
+	border: #333333 solid;
+	border-top-width: 2px;
+	border-bottom-width: 2px;
+	border-left-width: 2px;
+	border-right-width: 0px;
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+}
+
+#navbar ul li {
+	list-style-type: none;
+}
+
+#navbar ul li a:link, #navbar ul li a:visited {
+	color: #797979;
+	text-decoration: none;
+}
+
+#navbar ul {
+	padding-left: 3px;
+	margin-left: 0;
+}
+
+#navbar ul li ul {
+	margin-left: 12px;
+}

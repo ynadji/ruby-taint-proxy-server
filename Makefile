@@ -3,4 +3,4 @@
 # of konqueror, booya!
 page-gen:
 	ruby strip-xss-websites.rb --all
-	ruby delimiter-add.rb
+	ruby delimiter-add.rb --run
