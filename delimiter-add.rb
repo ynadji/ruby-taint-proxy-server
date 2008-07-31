@@ -31,18 +31,19 @@ def run_attacks(attacks, html, log)
 	nullified = false
 	attacks.each do |att|
 		# we sucessfully delimited an attack
-		# for now, just use **randnum**
 		ret = ""
-		if html.include?(att) and not html.include?("#{3.chr}#{att}#{2.chr}")
-			# different key for each substitution
-			while not ret.nil?
+		# different key for each substitution
+		while not ret.nil?
+			if html.include?(att) and not html.include?("#{3.chr}#{att}#{2.chr}")
 				key = gen_key
 				ret = html.sub!("#{att}","#{2.chr}#{key}#{3.chr}#{att}#{2.chr}#{key}#{3.chr}")
-
-				nullified = true
-
-				log.puts("#{att} nullified!")
+			else
+				ret = nil
 			end
+
+			nullified = true
+
+			log.puts("#{att} nullified!")
 		end
 	end
 	nullified
@@ -167,6 +168,23 @@ end
 
 def start_proxy(port)
 	# code to start proxy
+	proxy = WEBrick::HTTPProxyServer.new(
+		:Port => port,
+		:ProxyContentHandler => lambda { |request,response|
+		# get longest attack string
+		puts "Query: #{request.query.inspect}"
+		attack = request.query.values.sort {|x,y| y.length <=> x.length}[0]
+		if not attack.nil? and attack != ""
+			result = add_delims(response.body, attack, $stdout)
+			if result[1]
+				response.body = result[0]
+			end
+		end
+	}
+	)
+	trap('INT') { proxy.shutdown }
+
+	proxy.start
 end
 
 if cli_options[:run]
@@ -174,7 +192,7 @@ if cli_options[:run]
 		start_proxy(cli_options[:port])
 	else
 		delimit_html(cli_options[:url_file], 
-			     cli_options[:html_dir],
-			     cli_options[:logfile])
+						 cli_options[:html_dir],
+						 cli_options[:logfile])
 	end
 end
