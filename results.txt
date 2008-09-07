@@ -1,0 +1,264 @@
+== NOTES ==
+- a lot of the ones that crashed had the weird ;\\alert;;\; blah attack vector
+  from XSS listing website. correlation?
+- i think javascript might not differentiate between ' and " causing some of
+  the rendering problems
+
+html/0008.html
+	- String.fromCharCode()
+	- actually works fine
+html/0013.html
+	- String.fromCharCode()
+	- actually works fine
+html/0031.html
+	- actually works fine
+html/0040.html
+	- actually works fine
+html/0091.html
+	- issue unescaping text
+html/0095.html
+	- unsure, looks like an issue with placing delimiters incorrectly
+html/0098.html
+	- String.fromCharCode()
+	- actually works fine
+html/0103.html
+	- String.fromCharCode()
+	- actually works fine
+html/0106.html
+	- String.fromCharCode()
+	- actually works fine
+html/0113.html
+	- actually works fine
+html/0370.html
+	- delimiters placed incorrectly
+html/0538.html
+	- delimiters placed incorrectly
+html/0541.html
+	- delimiters placed incorrectly
+html/0544.html
+	- delimiters placed incorrectly (TONS of GET request arguments)
+html/0657.html
+	- case of attack somehow changes (totally cool, no clue how to break
+	  it)
+html/0843.html
+	- String.fromCharCode()
+html/0868.html
+	- delimiters placed incorrectly -- problem unescaping
+html/1131.html
+	- actually works
+html/1155.html
+	- delimiters placed incorrectly -- problem unescaping
+html/1168.html
+	- crashed? seems to work fine otherwise
+html/1209.html
+	- crashes
+html/1213.html
+	- case-sensitive issue
+html/1239.html
+	- SQL shit and tags close early for some reason
+html/1382.html
+	- case-sensitive issue
+html/1395.html
+	- turn + into space issue
+html/1652.html
+	- case-sensitive issue
+html/1689.html
+	- actually works just fine
+html/1753.html
+	- double quote -> single quote
+html/1869.html
+	- unescape problem
+html/1879.html
+	- unescape problem
+html/1888.html
+	- strange problem, seems to be related to a very specific way the
+	  website handled input for that particular variable
+html/2104.html
+	- unescape problem (needs to surround unescaped first, then, try
+	  escaped)
+html/2130.html
+	- actually works just fine
+html/2167.html
+	- case-sensitive issue
+html/2168.html
+	- quote-strip
+html/2218.html
+	- crashes
+html/2305.html
+	- title got stripped
+html/2332.html
+	- error with konq delim handling, and it crashes... weird shit
+html/2363.html
+	- first part of GET request is stripped
+html/2546.html
+	- unescape
+html/2563.html
+	- multiple GET key,values sent
+html/2659.html
+	- weird multiple attack vectors from ONE key,value pair...
+html/2666.html
+	- weird multiple attack vectors from ONE key,value pair...
+html/2726.html
+	- crashes :(
+html/2728.html
+	- crashes :(
+html/2766.html
+	- case/re-rendering issue
+html/2798.html
+	- crashes :( (javascript statement end attack)
+html/2804.html
+	- crashes. looks like it'd work though
+html/2892.html
+	- case/re-rendering issue
+html/2895.html
+	- ???
+html/2996.html
+	- multiple GET key,value
+html/3045.html
+	- multiple GET key,value
+html/3179.html
+	- rendering double->single quotes, etc.
+html/3225.html
+	- rendering issues
+html/3286.html
+	- multiple GET key,value
+html/3328.html
+	- multiple GET key,value
+html/3356.html
+	- works, multiple GET key,value
+html/3387.html
+	- + <-> ' ' issue, rendering; mostly works
+html/3464.html
+	- multiple GET key,value
+html/3466.html
+	- rendering double->single quotes, etc.
+html/3479.html
+	- rendering %20 <-> ' ' issue, rendering; mostly works
+html/3551.html
+	- actually works
+html/3562.html
+	- rendering error (no </marquee>)
+html/3577.html
+	- rendering double->single quotes, etc.
+html/3589.html
+	- rendering double->single quotes, etc.
+html/3596.html
+	- unescape
+html/3711.html
+	- unescape
+html/3779.html
+	- crashes; looks like it should work though
+html/3804.html
+	- crashes; looks like it should work though
+html/3807.html
+	- crashes; looks like it should work though
+html/3904.html
+	- unescape, not checking for escaped "/'
+html/3936.html
+	- actually works
+html/3944.html
+	- unescape
+html/3996.html
+	- bizarre encoding (parens looked like pound sign...)
+html/4030.html
+	- actually works
+html/4036.html
+	- case-sensitive/rendering
+html/4054.html
+	- crashes, looks liek it'd work though
+html/4097.html
+	- case-sensitve/rendering <ScRiPt>
+html/4306.html
+	- actually works
+html/4307.html
+	- actually works
+html/4314.html
+	- case-sensitive/rendering
+html/4324.html
+	- unescape, not checking for escaped "/'
+html/4386.html
+	- actually works
+html/4408.html
+	- unescape
+html/4421.html
+	- rendering issue -'s turned into ' '
+html/4468.html
+	- unescape
+html/4472.html
+	- rendering issue
+html/4524.html
+	- rendering issue
+html/4540.html
+	- unescape
+html/4542.html
+	- rendering issue
+html/4543.html
+	- javascript rendering (didn't replace javascript string)
+html/4554.html
+	- case-sensitive rendering
+html/4619.html
+	- cut-off </marquee>
+html/4628.html
+	- unescape
+html/4751.html
+	- cut-off </marquee>
+html/4761.html
+	- actually works
+html/4819.html
+	- unescape
+html/4854.html
+	- unescaped ' and " (should check for \" and \')
+html/4858.html
+	- unescape
+html/4873.html
+	- html gets stripped
+html/4951.html
+	- unescape
+html/4959.html
+	- unescape
+html/4973.html
+	- unescape
+html/4981.html
+	- cut-off </marquee>
+html/5011.html
+	- unescape
+html/5029.html
+	- unescape + <-> ' ', etc.
+html/5089.html
+	- crashed; looks good
+html/5112.html
+	- rendering problem: no quotes
+html/5136.html
+	- rendering problem: removed hyphen
+html/5153.html
+	- actually works
+html/5154.html
+	- actually works
+html/5155.html
+	- actually works
+html/5156.html
+	- unescape
+html/5167.html
+	- unescape and case
+html/5174.html
+	- unescape and case and + <-> ' ', etc.
+html/5191.html
+	- actually works
+html/5192.html
+	- actually works
+html/5198.html
+	- unescape
+html/5213.html
+	- multiple GET key,value
+html/5214.html
+	- unescape
+html/5227.html
+	- multiple GET key,value
+html/5247.html
+	- actually works
+html/5282.html
+	- crashed; looked good
+html/5321.html
+	-  unescape ' " -> \' \"
+html/5327.html
+	- actually works
