@@ -1,5 +1,5 @@
 0002
-0008
+0008 -> this looks like an interesting case, check it out (same as 0013 actually)
 0011
 0013 -> fromCharCode()
 0016

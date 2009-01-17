@@ -8,6 +8,8 @@ require 'proxy'
 require 'trollop'
 require 'open-uri'
 require 'cgi'
+require 'zlib'
+require 'stringio'
 
 $sleep_time = 10
 
@@ -37,6 +39,7 @@ def run_attacks(attacks, html, log)
 			if html.include?(att) and not html.include?("#{3.chr}#{att}#{2.chr}")
 				key = gen_key
 				ret = html.sub!("#{att}","#{2.chr}#{key}#{3.chr}#{att}#{2.chr}#{key}#{3.chr}")
+				puts ret
 			else
 				ret = nil
 			end
@@ -46,7 +49,7 @@ def run_attacks(attacks, html, log)
 			log.puts("#{att} nullified!")
 		end
 	end
-	nullified
+	[nullified, html]
 end
 
 def add_delims(html, attack, log)
@@ -72,9 +75,9 @@ def add_delims(html, attack, log)
 
 	attacks.uniq!
 
-	nullified = run_attacks(attacks, html, log)
+	nullified, html = run_attacks(attacks, html, log)
 
-	if not nullified
+	#if not nullified
 		newattacks = []
 
 		# guess server-side escaping or JS-escaping
@@ -88,8 +91,8 @@ def add_delims(html, attack, log)
 			newattacks << unescaped_attack.gsub('"','\"').gsub("'","\\'")
 		end
 
-		nullified = run_attacks(newattacks, html, log)
-	end
+		nullified, html = run_attacks(newattacks, html, log)
+	#end
 
 
 	# if it didn't work, try
@@ -97,7 +100,7 @@ def add_delims(html, attack, log)
 	if not nullified
 		last_ditch_attacks = []
 		unescaped_attack.scan(/<script>.*?<\/script>/i).each {|x| last_ditch_attacks << x}
-		nullified = run_attacks(last_ditch_attacks, html, log)
+		nullified, html = run_attacks(last_ditch_attacks, html, log)
 	end
 
 	return [html, nullified, attacks]
@@ -175,10 +178,30 @@ def start_proxy(port)
 		puts "Query: #{request.query.inspect}"
 		attack = request.query.values.sort {|x,y| y.length <=> x.length}[0]
 		if not attack.nil? and attack != ""
-			result = add_delims(response.body, attack, $stdout)
-			if result[1]
-				response.body = result[0]
+			begin
+				puts "REQUEST HEADER"
+				p request.header
+				puts "RESPONSE HEADER"
+				p response.header
+				if response.header['content-encoding'] == 'gzip'
+					body = StringIO.new(response.body)
+					gz = Zlib::GzipReader.new(body)
+					body_str = gz.read
+					if body_str.nil?
+						body_str = response.body
+					end
+				end
+			rescue Exception => e
+				$stderr.puts("Problem gzipping: #{e}")
+				body_str = response.body
 			end
+
+			result = add_delims(body_str, attack, $stdout)
+
+			response.body = result[0]
+			f = File.new('awesome', 'w')
+			f.puts response.body
+			f.close
 		end
 	}
 	)
